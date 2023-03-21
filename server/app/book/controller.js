@@ -4,8 +4,11 @@ const controller = {
   create(newBook) {
     return Book.create(newBook);
   },
-  index(userId) {
-    return Book.find({ userId });
+  index(bookId) {
+    return Book.find({ bookId });
+  },
+  show(bookId) {
+    return Book.findById(bookId);
   },
   delete(bookId) {
     return Book.findByIdAndDelete(bookId);

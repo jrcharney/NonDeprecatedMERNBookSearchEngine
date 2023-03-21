@@ -5,7 +5,8 @@ import cors from "cors";
 import express from "express";
 import http from "http";
 import config from "./config.js";
-import { resolvers, typeDefs } from "./graphql/index.js";
+import resolvers from "./graphql/resolvers.js";
+import typeDefs from "./graphql/type-defs.js";
 
 const { port } = config;
 

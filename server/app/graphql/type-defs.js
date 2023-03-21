@@ -1,11 +1,13 @@
+import { gql } from "graphql-tag"; // Need this anyway otherwise VSCode won't format it.
 // 🤯 With Apollo Server 4, no need to import gql from 'graphql-tag' 🤯
 // "The gql tag is no longer required to parse GraphQL queries. You can now use plain template strings instead."
 // https://www.apollographql.com/docs/apollo-server/migration/#gql-tag
-export default `
+export default gql`
   type Query {
     "All saved 📚 for logged in user"
     books: [Book!]!
     currentUser: User
+    # users: [User!]!
   }
 
   type Mutation {
