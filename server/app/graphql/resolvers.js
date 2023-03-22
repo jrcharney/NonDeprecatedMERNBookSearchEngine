@@ -1,64 +1,49 @@
 import bookController from "../book/controller.js";
 import userController from "../user/controller.js";
+import { handleError } from "../utils.js";
 
-const resolvers = {
+function handleNoUser(msg) {
+  handleError(new Error(msg), "UNAUTHENTICATED");
+}
+
+export default {
   Query: {
-    /*
-    // List users
-    async users() {
-      return await userController.index();
+    currentUser(_, __, { user }) {
+      return user;
     },
-    */
-    /*
-    // Show a user
-    async user(_, { id }) {
-      return await userController.show(id);
-    },
-    */
-    // List books
-    async books() {
-      return await bookController.index();
-    },
-    /*
-    // Show Books
-    async book(_, { bookId }) {
-      return await userController.show(bookId);
-    },
-    */
   },
+
   Mutation: {
-    // Returns a user token
     async createUser(_, { user }) {
-      return await userController.create(user);
-    },
-    /*
-    // Returns a book token
-    async createBook(_, { book }) {
-      const token = await bookController.create(book);
+      const token = await userController.create(user);
+
       return { token };
     },
-    // Delete a book
-    async deleteBook(_, { bookId }) {
-      return await bookController.delete(bookId);
-    },
-    */
     async login(_, { username, password }) {
-      const token = userController.login({ username, password });
+      const token = await userController.show(username, password);
+
       return { token };
+    },
+    async saveBook(_, { book }, { user }) {
+      // Don't bother controller if no user
+      if (!user) handleNoUser("You must be logged in to save 📖 a book.");
+
+      return await bookController.create({ ...book, userId: user.id });
+    },
+    async removeBook(_, { bookId }, { user }) {
+      // Don't bother controller if no user
+      if (!user) handleNoUser("You must be logged in to remove 🔥 a book.");
+
+      return await bookController.delete(bookId, user.id);
     },
   },
 
-  /*
-  async saveBook(_, { book }, { user }) {
-    return await bookController.create({ ...book, userId: user.id });
+  // Keeping it separated means it only gets called when the modules field is requested
+  // (parent is the track) - RESOLVER ⛓️
+  User: {
+    // We are using the parent parameter
+    async books(user) {
+      return await bookController.index(user.id);
+    },
   },
-  async removeBook(_, { book }, { user }) {
-    const bookToDelete = await bookController.show(bookId);
-    if (book.userId !== user.id) {
-      return book.findByIdAndDelete(bookId);
-    }
-  },
-  */
 };
-
-export default resolvers;
